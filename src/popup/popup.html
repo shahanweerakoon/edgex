@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook Lead Collector</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Facebook Lead Collector</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div id="connection-badge" class="connection-pill disconnected" title="Google Sheets connection status">
+          <span class="status-dot"></span>
+          <span id="connection-status-text">Not Connected</span>
+        </div>
+        <button id="btn-open-settings" class="icon-button" title="Open Settings" aria-label="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Page Detection Status Bar -->
+    <div id="page-status-banner" class="status-banner info">
+      <div class="status-icon">
+        <svg id="page-status-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </div>
+      <div id="page-status-message" class="status-message">Detecting Facebook page data...</div>
+    </div>
+
+    <!-- Toast / Alert Area -->
+    <div id="alert-box" class="alert hidden" role="alert">
+      <div id="alert-content" class="alert-content"></div>
+      <button id="alert-close" class="alert-close" aria-label="Close alert">&times;</button>
+    </div>
+
+    <!-- Lead Capture Form -->
+    <form id="lead-form" class="lead-form" novalidate>
+      <!-- Core Field 1: Name -->
+      <div class="form-group">
+        <label for="lead-name" class="form-label">
+          Business / Personal Name <span class="required-star">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="lead-name"
+            class="form-input"
+            placeholder="e.g. Acme Lanka Technologies"
+            required
+            autocomplete="off"
+          >
+        </div>
+        <div id="error-lead-name" class="field-error hidden"></div>
+      </div>
+
+      <!-- Core Field 2: Contact Number (with WhatsApp badge) -->
+      <div class="form-group">
+        <div class="label-with-badge">
+          <label for="lead-phone" class="form-label">WhatsApp / Contact Number</label>
+          <span id="whatsapp-indicator" class="badge-whatsapp hidden">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.97.531 1.769.813 2.796.813h.005c3.18 0 5.767-2.586 5.768-5.766 0-3.18-2.587-5.766-5.773-5.766zm3.375 8.163c-.14.394-.813.738-1.127.785-.314.047-.704.068-2.034-.482-1.701-.703-2.791-2.435-2.875-2.548-.084-.112-.686-.913-.686-1.741 0-.828.433-1.236.587-1.404.154-.168.336-.21.448-.21.112 0 .224 0 .322.007.105.007.245-.04.385.294.14.336.476 1.162.518 1.246.042.084.07.182.014.294-.056.112-.084.182-.168.28-.084.098-.175.217-.252.294-.084.084-.175.175-.077.343.098.168.434.717.931 1.16.64.57 1.18.746 1.348.83.168.084.266.07.364-.042.098-.112.42-49.532.532-.714.112-.182.224-.154.378-.098.154.056.973.459 1.141.543.168.084.28.126.322.196.042.07.042.406-.098.8z"/>
+            </svg>
+            WhatsApp Found
+          </span>
+        </div>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="lead-phone"
+            class="form-input"
+            placeholder="e.g. +94 77 123 4567"
+            autocomplete="off"
+          >
+        </div>
+        <div id="error-lead-phone" class="field-error hidden"></div>
+      </div>
+
+      <!-- Core Field 3: Facebook URL -->
+      <div class="form-group">
+        <label for="lead-url" class="form-label">
+          Facebook Page / Profile Link <span class="required-star">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input
+            type="url"
+            id="lead-url"
+            class="form-input"
+            placeholder="https://www.facebook.com/..."
+            required
+            autocomplete="off"
+          >
+        </div>
+        <div id="error-lead-url" class="field-error hidden"></div>
+      </div>
+
+      <!-- Category & Page Type Row -->
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <div class="label-with-action">
+            <label for="lead-category" class="form-label">Category <span class="required-star">*</span></label>
+            <button type="button" id="btn-quick-new-category" class="link-button" title="Add a new business category">+ New</button>
+          </div>
+          <select id="lead-category" class="form-select" required>
+            <option value="General">General</option>
+          </select>
+          <div id="error-lead-category" class="field-error hidden"></div>
+        </div>
+
+        <div class="form-group flex-1">
+          <label for="lead-page-type" class="form-label">Page Type</label>
+          <select id="lead-page-type" class="form-select">
+            <option value="Business Page">Business Page</option>
+            <option value="Public Group">Public Group</option>
+            <option value="Personal Profile">Personal Profile</option>
+            <option value="Post">Post / Content</option>
+            <option value="Event">Event</option>
+            <option value="Marketplace">Marketplace</option>
+            <option value="Other Facebook Page">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Inline Add Category Input (Initially hidden) -->
+      <div id="inline-category-box" class="inline-category-box hidden">
+        <div class="input-with-button">
+          <input
+            type="text"
+            id="input-inline-category"
+            class="form-input form-input-sm"
+            placeholder="New Category Name (e.g. Healthcare)"
+            maxlength="100"
+          >
+          <button type="button" id="btn-save-inline-category" class="btn-sm btn-primary">Create</button>
+          <button type="button" id="btn-cancel-inline-category" class="btn-sm btn-subtle">&times;</button>
+        </div>
+      </div>
+
+      <!-- Expandable Optional Fields -->
+      <div class="accordion-section">
+        <button type="button" id="btn-toggle-optional" class="accordion-toggle" aria-expanded="false">
+          <span class="accordion-title">
+            <svg id="accordion-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            Optional Contact Details & Notes
+          </span>
+          <span class="accordion-hint">Email, Website, Notes</span>
+        </button>
+
+        <div id="optional-fields-container" class="accordion-content hidden">
+          <div class="form-group">
+            <label for="lead-email" class="form-label">Email Address</label>
+            <input type="email" id="lead-email" class="form-input" placeholder="e.g. info@business.com">
+            <div id="error-lead-email" class="field-error hidden"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="lead-website" class="form-label">Website</label>
+            <input type="url" id="lead-website" class="form-input" placeholder="e.g. https://business.com">
+            <div id="error-lead-website" class="field-error hidden"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="lead-additional-phone" class="form-label">Additional Contact Number</label>
+            <input type="text" id="lead-additional-phone" class="form-input" placeholder="e.g. +94 11 234 5678">
+          </div>
+
+          <div class="form-group">
+            <label for="lead-notes" class="form-label">Lead Notes</label>
+            <textarea id="lead-notes" class="form-textarea" rows="2" placeholder="e.g. Met on Facebook Group, interested in custom pricing..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Primary Action: Save to Google Sheets -->
+      <div class="form-actions">
+        <button type="submit" id="btn-save-lead" class="btn btn-primary btn-block">
+          <span class="btn-spinner hidden" id="save-spinner"></span>
+          <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <span id="btn-save-text">Save Lead to Google Sheets</span>
+        </button>
+      </div>
+
+      <!-- Secondary Utility Actions -->
+      <div class="secondary-actions">
+        <button type="button" id="btn-refresh-data" class="action-link" title="Re-extract data from current tab">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          Refresh Data
+        </button>
+
+        <button type="button" id="btn-clear-form" class="action-link" title="Clear current form fields">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Clear Form
+        </button>
+
+        <button type="button" id="btn-manage-categories" class="action-link" title="Manage Category Tabs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Categories
+        </button>
+      </div>
+    </form>
+
+    <!-- Duplicate Detection Modal -->
+    <div id="duplicate-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="duplicate-modal-title">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-icon-warning">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <h3 id="duplicate-modal-title" class="modal-title">Duplicate Lead Detected</h3>
+        </div>
+
+        <div class="modal-body">
+          <p id="duplicate-explanation" class="modal-text">
+            A lead matching this Facebook link already exists in your spreadsheet.
+          </p>
+          <div id="duplicate-comparison-box" class="comparison-box">
+            <div class="comparison-row">
+              <span class="comparison-label">Existing:</span>
+              <span id="dup-existing-summary" class="comparison-val"></span>
+            </div>
+            <div class="comparison-row">
+              <span class="comparison-label">New:</span>
+              <span id="dup-new-summary" class="comparison-val"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-dup-update" class="btn btn-primary btn-sm">Update Existing</button>
+          <button type="button" id="btn-dup-save-new" class="btn btn-secondary btn-sm">Save as New</button>
+          <button type="button" id="btn-dup-skip" class="btn btn-subtle btn-sm">Skip Duplicate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Partial Save Recovery Banner -->
+    <div id="partial-save-box" class="partial-save-box hidden">
+      <div class="partial-save-content">
+        <strong>Partial Sync Warning:</strong>
+        <span id="partial-save-text">Lead saved to Category tab, but Master tab failed.</span>
+      </div>
+      <button type="button" id="btn-retry-sync" class="btn-sm btn-primary">Retry Sync</button>
+    </div>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

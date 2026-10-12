@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Management - Facebook Lead Collector</title>
+  <link rel="stylesheet" href="categories.css">
+</head>
+<body>
+  <div class="categories-layout">
+    <header class="page-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </div>
+        <div>
+          <h1 class="page-title">Category Management</h1>
+          <p class="page-subtitle">Manage business categories and their corresponding Google Sheets tabs</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="btn-sync-sheets" class="btn btn-secondary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          Sync from Google Sheets
+        </button>
+      </div>
+    </header>
+
+    <!-- Alert / Toast -->
+    <div id="category-alert" class="alert hidden">
+      <div id="category-alert-text"></div>
+      <button id="btn-close-alert" class="alert-close">&times;</button>
+    </div>
+
+    <!-- Active Connected Sheet Pill -->
+    <div class="sheet-connection-status">
+      <span class="status-indicator"></span>
+      <span id="active-sheet-label">Loading sheet status...</span>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid-container">
+      <!-- Left Column: Create Category -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Create New Category</h2>
+          <p class="card-subtitle">Creates a dedicated sheet tab with standard lead column headers.</p>
+        </div>
+        <div class="card-body">
+          <form id="create-category-form" novalidate>
+            <div class="form-group">
+              <label for="new-category-name" class="form-label">Category Name</label>
+              <input
+                type="text"
+                id="new-category-name"
+                class="form-input"
+                placeholder="e.g. Healthcare, Education, Real Estate"
+                maxlength="100"
+                required
+                autocomplete="off"
+              >
+              <span class="field-hint">Tab names cannot contain * ? : / \ [ ] and cannot be "All Leads".</span>
+            </div>
+
+            <div id="sanitized-preview-box" class="preview-box hidden">
+              <span class="preview-label">Google Sheets Tab Name Preview:</span>
+              <strong id="sanitized-preview-text" class="preview-name"></strong>
+            </div>
+
+            <button type="submit" id="btn-create-category" class="btn btn-primary mt-16">
+              <span class="spinner hidden" id="create-spinner"></span>
+              Create Category Tab
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right Column: Existing Categories List -->
+      <section class="card">
+        <div class="card-header flex-between">
+          <div>
+            <h2 class="card-title">Active Categories (<span id="category-count">0</span>)</h2>
+            <p class="card-subtitle">Each category corresponds to a tab in your connected spreadsheet.</p>
+          </div>
+        </div>
+
+        <div class="card-body p-0">
+          <!-- Master Sheet Banner -->
+          <div class="master-tab-item">
+            <div class="tab-badge-master">MASTER TAB</div>
+            <div class="tab-info">
+              <strong>All Leads</strong>
+              <p class="text-subtle">Contains every captured lead across all categories. (Protected)</p>
+            </div>
+          </div>
+
+          <!-- Category List Container -->
+          <div id="categories-list" class="categories-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Rename Modal -->
+    <div id="rename-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <h3 class="modal-title">Rename Category Tab</h3>
+        <p class="modal-desc">
+          Renaming will update the sheet tab name in Google Sheets for <strong id="rename-old-name"></strong>.
+        </p>
+
+        <div class="form-group mt-12">
+          <label for="input-rename-category" class="form-label">New Category Name</label>
+          <input type="text" id="input-rename-category" class="form-input" maxlength="100">
+        </div>
+
+        <div class="modal-actions mt-16">
+          <button type="button" id="btn-confirm-rename" class="btn btn-primary btn-sm">Confirm Rename</button>
+          <button type="button" id="btn-cancel-rename" class="btn btn-secondary btn-sm">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="categories.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Facebook Lead Collector</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-layout">
+    <!-- Sidebar / Header -->
+    <aside class="settings-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Facebook Lead Collector</h1>
+          <p class="brand-subtitle">Extension Configuration</p>
+        </div>
+      </div>
+
+      <nav class="settings-nav">
+        <a href="#oauth-section" class="nav-item active">Google Authentication</a>
+        <a href="#sheets-section" class="nav-item">Google Sheets Integration</a>
+        <a href="#general-section" class="nav-item">Preferences & Defaults</a>
+        <a href="../options/categories.html" class="nav-item" target="_blank">Manage Categories &rarr;</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="version-tag">Version 1.0.0 (MV3)</span>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="settings-main">
+      <header class="content-header">
+        <h2 class="section-title">Settings & Integrations</h2>
+        <p class="section-desc">Connect your Google Account and select the destination Google Spreadsheet for captured leads.</p>
+      </header>
+
+      <!-- Alert Notification -->
+      <div id="settings-alert" class="alert hidden">
+        <div id="settings-alert-text"></div>
+        <button id="btn-close-alert" class="alert-close">&times;</button>
+      </div>
+
+      <!-- Section 1: Google OAuth Authentication -->
+      <section id="oauth-section" class="card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="card-title">Google Account Authentication</h3>
+            <p class="card-subtitle">Authenticate via Google OAuth 2.0 to access Google Sheets API v4.</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Auth Status Indicator -->
+          <div class="status-box" id="auth-status-box">
+            <div class="status-left">
+              <span id="auth-status-dot" class="dot disconnected"></span>
+              <div>
+                <strong id="auth-status-label">Not Connected</strong>
+                <p id="auth-status-email" class="text-subtle">No Google account linked.</p>
+              </div>
+            </div>
+            <div class="status-right">
+              <button type="button" id="btn-connect-google" class="btn btn-primary">Connect Google Account</button>
+              <button type="button" id="btn-disconnect-google" class="btn btn-secondary hidden">Disconnect</button>
+            </div>
+          </div>
+
+          <!-- OAuth Client ID Configuration -->
+          <div class="form-group mt-16">
+            <label for="input-client-id" class="form-label">Google OAuth 2.0 Client ID</label>
+            <div class="input-row">
+              <input
+                type="text"
+                id="input-client-id"
+                class="form-input"
+                placeholder="e.g. 123456789012-xxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
+                autocomplete="off"
+              >
+              <button type="button" id="btn-save-client-id" class="btn btn-secondary">Save Client ID</button>
+            </div>
+            <span class="field-hint">
+              Created in Google Cloud Console &rarr; APIs & Services &rarr; Credentials &rarr; OAuth Client ID (Web Application type).
+            </span>
+          </div>
+
+          <!-- Redirect URI Helper -->
+          <div class="info-box mt-12">
+            <div class="info-label">Your Extension Redirect URI for Google Cloud Console:</div>
+            <div class="redirect-uri-row">
+              <code id="redirect-uri-text" class="code-box">Loading...</code>
+              <button type="button" id="btn-copy-redirect" class="btn-sm btn-secondary">Copy URI</button>
+            </div>
+            <p class="text-subtle mt-6">
+              Add this exact URI to <strong>Authorized redirect URIs</strong> in your Google Cloud OAuth Client credentials.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Google Sheets Connection -->
+      <section id="sheets-section" class="card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="8" y1="13" x2="16" y2="13"></line>
+              <line x1="8" y1="17" x2="16" y2="17"></line>
+            </svg>
+          </div>
+          <div>
+            <h3 class="card-title">Target Google Spreadsheet</h3>
+            <p class="card-subtitle">Select or enter the spreadsheet where leads and categories will be stored.</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="form-group">
+            <label for="input-spreadsheet" class="form-label">Google Spreadsheet URL or ID</label>
+            <div class="input-row">
+              <input
+                type="text"
+                id="input-spreadsheet"
+                class="form-input"
+                placeholder="https://docs.google.com/spreadsheets/d/1BxiMVs.../edit or 1BxiMVs..."
+              >
+              <button type="button" id="btn-save-spreadsheet" class="btn btn-primary">Connect Sheet</button>
+            </div>
+            <span class="field-hint">Paste the full spreadsheet URL from your browser address bar.</span>
+          </div>
+
+          <!-- Active Sheet Info Banner -->
+          <div id="active-sheet-card" class="sheet-info-card hidden">
+            <div class="sheet-info-header">
+              <div>
+                <span class="badge-success">Active Spreadsheet</span>
+                <h4 id="active-sheet-title" class="sheet-title">My Leads Spreadsheet</h4>
+                <p id="active-sheet-id" class="text-subtle font-mono"></p>
+              </div>
+              <div class="sheet-actions">
+                <button type="button" id="btn-test-connection" class="btn btn-secondary btn-sm">Test Connection</button>
+                <button type="button" id="btn-init-sheet" class="btn btn-secondary btn-sm">Initialize "All Leads"</button>
+                <button type="button" id="btn-disconnect-sheet" class="btn btn-danger btn-sm">Disconnect Sheet</button>
+              </div>
+            </div>
+
+            <div id="test-connection-output" class="test-output hidden"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Preferences & Defaults -->
+      <section id="general-section" class="card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="card-title">Preferences</h3>
+            <p class="card-subtitle">Set default category and manage local extension storage.</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="form-group">
+            <label for="select-default-category" class="form-label">Default Business Category</label>
+            <select id="select-default-category" class="form-select">
+              <option value="General">General</option>
+            </select>
+          </div>
+
+          <div class="danger-zone mt-20">
+            <h4 class="danger-title">Reset Local Settings</h4>
+            <p class="text-subtle">
+              Clears cached tokens, Client ID, and saved preferences from this browser. Does NOT delete your Google spreadsheet or leads.
+            </p>
+            <button type="button" id="btn-clear-storage" class="btn btn-subtle-danger mt-8">Clear Local Configuration</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+/* Facebook Lead Collector Content Script Styles */
+
+.fb-lead-collector-highlight {
+  outline: 2px solid #8356E4 !important;
+  outline-offset: 2px !important;
+  transition: outline 0.2s ease-in-out !important;
+}
+
+.fb-lead-collector-extracted-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #8356E4;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 999999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
